@@ -1,14 +1,26 @@
-default: debug
+.PHONY: build run clean
 
-Filename := main.cpp
+default: run
+
+Filename := test.cpp
 Exec := $(basename $(Filename)).exe
 
-build: $(Exec)
+Flags := -D DEBUG -g -std=c++20
+files := $(wildcard *.cpp)
+OBJS := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
+DIR = $(CURDIR)
 
-debug: $(Exec)
-	./$^
-#del $^
 
-$(Exec): $(Filename)
-	g++ -o $@ -D DEBUG -g -std=c++20 $^
+build: $(Exec) clean
 
+run: $(Exec) clean
+	./$<
+
+$(Exec): $(OBJS)
+	g++ $^ -o $@ $(Flags)
+
+%.o: %.cpp
+	g++ -c $< -o $@ $(Flags)
+
+clean:
+	rm *.o
